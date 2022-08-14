@@ -21,7 +21,8 @@ const OFFER_KEYS = {
   photos: 'photos',
 };
 
-const checkDataPresentation = (object, objectKeys) => {//похищенная функция у соседа для скрытия пустых полей
+//похищенная функция у соседа для скрытия пустых полей
+const checkDataPresentation = (object, objectKeys) => {
   Object.keys(objectKeys).forEach((key) => {
     if (!key) {
       object.querySelector(`.popup__${OFFER_KEYS[key]}`).classList.add('hidden');
@@ -29,7 +30,8 @@ const checkDataPresentation = (object, objectKeys) => {//похищенная ф
   });
 };
 
-const createImage = (srcKey) => {//функция для отрисовки аппартаментов
+//функция для отрисовки аппартаментов
+const createImage = (srcKey) => {
   const newImage = document.createElement('img');
   newImage.classList.add('.popup__photo');
   newImage.width = '45';
@@ -48,7 +50,7 @@ const getRelatedAds = () => {
 
   randomObjectUser.forEach(({author: {avatar}, offer: {title, address, price, type, rooms, guests, checkin, checkout, features, description, photos}}) => {
     const relatedAds = cardElementTemplate.cloneNode(true);//создаю клон шаблона с данными
-    // checkDataPresentation(relatedAds, {avatar, title, address,price, type, rooms, guests, checkin, checkout, features, description, photos});
+
     const popupPhotos = relatedAds.querySelector('.popup__photos');
     const popupPhoto = relatedAds.querySelector('.popup__photo');
 
@@ -71,7 +73,8 @@ const getRelatedAds = () => {
     }
     popupPhoto.remove();
 
-    featureList.forEach((featureListItem) => { //с помощью some сравниваю сгенерарованные features с строками в HTML
+    //с помощью some сравниваю сгенерарованные features с строками в HTML
+    featureList.forEach((featureListItem) => {
       const isNecessary = featuresItem.some((feature) =>
         featureListItem.classList.contains(`popup__feature--${feature}`));//конструкция проверки
       if(!isNecessary){
@@ -84,5 +87,5 @@ const getRelatedAds = () => {
   mapCanvastContainer.append(cardElementFragment.lastElementChild);//добавил в блок первый элемен форича
 
 };
-console.log(mapCanvastContainer);
+//console.log(mapCanvastContainer);
 export {getRelatedAds};
