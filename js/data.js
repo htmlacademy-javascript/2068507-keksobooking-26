@@ -45,7 +45,7 @@ const getAvatar = (id) => ({
   avatar: (`img/avatars/user${id.toString().padStart(2, '0')}.png`)
 });//фото аватара
 
-const generateRandomArrayValues = (id) =>{
+const getArrayValues = (id) =>{
   const array = [];
   const arrayLength = getRandomPositiveNumber(1, id.length);
   for (let i = 0; i < arrayLength; i++) {
@@ -67,9 +67,9 @@ const getOfferArray = (locat) => ({
   guests: getRandomPositiveNumber(1, 10, 0),
   checkin: getRandomValue(CHECKIN_TIME),
   checkout: getRandomValue(CHECKIN_TIME),
-  features: generateRandomArrayValues(FEATURES),
+  features: getArrayValues(FEATURES),
   description: getRandomValue(DESCRIPTION),
-  photos: generateRandomArrayValues(PHOTOS),
+  photos: getArrayValues(PHOTOS),
 });// строка offer
 
 const createObjects = (a) => {

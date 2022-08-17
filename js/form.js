@@ -1,5 +1,4 @@
 const adForm = document.querySelector('.ad-form');
-const adFormInputs = document.querySelectorAll('.ad-form');
 const mapFilters = document.querySelector('.map__filters');
 const housingTypeInput = adForm.querySelector('#type');
 const priceInput = adForm.querySelector('#price');
@@ -7,6 +6,7 @@ const checkInInput = adForm.querySelector('#timein');
 const checkOutInput = adForm.querySelector('#timeout');
 const roomNumberInput = adForm.querySelector('#room_number');
 const capacityInput = adForm.querySelector('#capacity');
+
 
 const ROOM_CAPACITY = {
   '1': ['1'],
@@ -69,7 +69,6 @@ const onHousingTypeInputChange = () => {
 const validateRoomNumberInput = () => ROOM_CAPACITY[roomNumberInput.value].includes(capacityInput.value);
 const getCapacityErrorMessage = () => `Размещение в ${roomNumberInput.value} ${roomNumberInput.value === '1' ? 'комнате' : 'комнатах'} для ${capacityInput.value} ${capacityInput.value === '1' ? 'гостя' : 'гостей'} невозможно`;
 
-
 //функция обработки события отправки формы для передачи по ссылке
 const onAdFormSubmit = (evt) => {
   const isValid = pristine.validate();
@@ -84,7 +83,7 @@ const onAdFormSubmit = (evt) => {
 const getFormValidation = () => {
   adForm.addEventListener('submit', onAdFormSubmit);
 
-  pristine.addValidator(priceInput, validatePriceInput, getPriceErrorMessage);//1 елемент, 2если тру 3 если false
+  pristine.addValidator(priceInput, validatePriceInput, getPriceErrorMessage);//1 елемент, 2 если тру 3 если false
   housingTypeInput.addEventListener('change', onHousingTypeInputChange);
 
   pristine.addValidator(capacityInput, validateRoomNumberInput, getCapacityErrorMessage);
@@ -95,9 +94,8 @@ const getFormValidation = () => {
 };
 
 
-;
-
 disableForm(mapFilters);//блочим карту
 resetAdForm();
 
-getFormValidation()
+getFormValidation();
+

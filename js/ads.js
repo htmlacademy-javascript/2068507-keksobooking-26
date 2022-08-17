@@ -1,13 +1,13 @@
 import {randomObjectUser} from './data.js';
 
-const TYPES_DESCRIPTION = {
+const TypesDescription = {
   flat : 'Квартира',
   bungalow: 'Бунгало',
   house: 'Дом',
   palace: 'Дворец',
   hotel: 'Отель'
 };
-const OFFER_KEYS = {
+const OfferKeys = {
   title: 'title',
   address: 'text--address',
   price: 'text--price',
@@ -22,10 +22,10 @@ const OFFER_KEYS = {
 };
 
 //похищенная функция у соседа для скрытия пустых полей
-const checkDataPresentation = (object, objectKeys) => {
-  Object.keys(objectKeys).forEach((key) => {
+const checkDataPresentation = (addClassHidden, array) => {
+  Object.keys(array).forEach((key) => {
     if (!key) {
-      object.querySelector(`.popup__${OFFER_KEYS[key]}`).classList.add('hidden');
+      addClassHidden.querySelector(`.popup__${OfferKeys[key]}`).classList.add('hidden');
     }
   });
 };
@@ -43,7 +43,7 @@ const createImage = (srcKey) => {
 
 const cardElementTemplate = document.querySelector('#card').content.querySelector('article.popup');
 const mapCanvastContainer = document.querySelector('#map-canvas');
-const cardElementFragment = document.createDocumentFragment();
+const createCardElementFragment = document.createDocumentFragment();
 
 const getRelatedAds = () => {
   mapCanvastContainer.innerHTML = '';
@@ -61,7 +61,7 @@ const getRelatedAds = () => {
 
     relatedAds.querySelector('.popup__title').textContent = title;
     relatedAds.querySelector('.popup__text--price').textContent = `${price} ₽/ночь`;
-    relatedAds.querySelector('.popup__type').textContent = TYPES_DESCRIPTION[type];
+    relatedAds.querySelector('.popup__type').textContent = TypesDescription[type];
     relatedAds.querySelector('.popup__text--address').textContent = address;
     relatedAds.querySelector('.popup__text--capacity').textContent = `${rooms} комнаты для ${guests} гостей`;
     relatedAds.querySelector('.popup__text--time').textContent = `Заезд после ${checkin}, выезд до ${checkout}`;
@@ -82,9 +82,9 @@ const getRelatedAds = () => {
       }
     });
 
-    cardElementFragment.append(relatedAds);
+    createCardElementFragment.append(relatedAds);
   });
-  mapCanvastContainer.append(cardElementFragment.lastElementChild);//добавил в блок первый элемен форича
+  mapCanvastContainer.append(createCardElementFragment.lastElementChild);//добавил в блок первый элемен форича
 
 };
 //console.log(mapCanvastContainer);

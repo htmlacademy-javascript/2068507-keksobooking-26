@@ -3,8 +3,8 @@ const getRandomPositiveNumber = (min, max, fraction) => { //рандомное �
   if(isRangeCorrect){
     const rand = Math.random() * (max - min) + min;
     return rand.toFixed(fraction);
-  } else {
-    console.log('передан неверный диапазон');
+  // } else {
+  //   console.log('передан неверный диапазон');
   }
 };
 
