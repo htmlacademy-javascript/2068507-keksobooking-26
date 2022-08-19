@@ -5,3 +5,4 @@ import './form.js';
 import {getRelatedAds} from './ads.js';
 
 getRelatedAds();
+
