@@ -68,7 +68,8 @@ const getRelatedAds = () => {
     relatedAds.querySelector('.popup__description').textContent = description;
     relatedAds.querySelector('.popup__avatar').src = avatar;
 
-    for(let i = 0; i< photos.length; i++){//фотографии
+    //добавить фотографии
+    for(let i = 0; i< photos.length; i++){
       popupPhotos.append(createImage(photos[i]));
     }
     popupPhoto.remove();
@@ -84,8 +85,8 @@ const getRelatedAds = () => {
 
     createCardElementFragment.append(relatedAds);
   });
-  mapCanvastContainer.append(createCardElementFragment.lastElementChild);//добавил в блок первый элемен форича
-
+  mapCanvastContainer.append(createCardElementFragment.lastElementChild);
+  //добавил в блок первый элемен форича
 };
 //console.log(mapCanvastContainer);
 export {getRelatedAds};

@@ -6,8 +6,8 @@ const TITLE_TEXT = [
   'Семейный отель',
   'Отель Лакшери',
   'Ночлежка'
-//описание отеля
 ];
+
 const TYPE_ARRAY = [
   'palace',
   'flat',
@@ -15,9 +15,11 @@ const TYPE_ARRAY = [
   'bungalow',
   'hotel'
 ];
+
 const CHECKIN_TIME = [
   '12:00', '13:00', '14:00'
-];//
+];
+
 const DESCRIPTION = [
   'Лучший отель Поволжья',
   'Отель по доступным ценам',
@@ -36,15 +38,18 @@ const PHOTOS = [
   'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/claire-rendall-b6kAwr1i0Iw.jpg'
 ];
 
+//генерация локации
 const generateLocatoin = () =>({
   lat: getRandomPositiveNumber( 35.65000, 35.70000, 5),
   lng: getRandomPositiveNumber( 139.70000, 139.80000, 5)
-});//генерация локации
+});
 
+//фото аватара
 const getAvatar = (id) => ({
   avatar: (`img/avatars/user${id.toString().padStart(2, '0')}.png`)
-});//фото аватара
+});
 
+//генерация массива случайной длинны из значений(количество и единицы)
 const getArrayValues = (id) =>{
   const array = [];
   const arrayLength = getRandomPositiveNumber(1, id.length);
@@ -56,8 +61,9 @@ const getArrayValues = (id) =>{
     }
   }
   return array;
-};//генерация массива случайной длинны из значений(количество и единицы)
+};
 
+// строка offer
 const getOfferArray = (locat) => ({
   title: getRandomValue(TITLE_TEXT),
   adress: ` ${locat.lat}, ${locat.lng}`,
@@ -70,8 +76,9 @@ const getOfferArray = (locat) => ({
   features: getArrayValues(FEATURES),
   description: getRandomValue(DESCRIPTION),
   photos: getArrayValues(PHOTOS),
-});// строка offer
+});
 
+//создание одного объекта
 const createObjects = (a) => {
   const location = generateLocatoin();
   return {
@@ -79,17 +86,17 @@ const createObjects = (a) => {
     location,
     offer: getOfferArray(location)
   };
-};//создание одного объекта
+};
 
+//создание массива объектов
 const generateObjects = (count) => {
   const object = [];
   for (let i = 0; i < count; i++){
     object.push(createObjects(i));
   }
   return object;
-};//создание массива объектов
+};
 
 const randomObjectUser = generateObjects(OBJECTS_TO_GEN);
-
 
 export {randomObjectUser};

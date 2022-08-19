@@ -55,7 +55,8 @@ const onCheckInOutInputChange = () => {
 const validatePriceInput = () => priceInput.value >= MIN_PRICE_OF_HOUSING[housingTypeInput.value];//сравниваем => получаем тру или фолс
 const getPriceErrorMessage = () => {
   if (priceInput.value <= MIN_PRICE_OF_HOUSING[housingTypeInput.value]) {
-    return `минимальная стоимость за ночь ${MIN_PRICE_OF_HOUSING[housingTypeInput.value]}`;//если в верхней функции false то выдает как ощибку с описанием
+    return `минимальная стоимость за ночь ${MIN_PRICE_OF_HOUSING[housingTypeInput.value]}`;
+    //если в верхней функции false то выдает как ощибку с описанием
   }
 };
 
@@ -96,6 +97,5 @@ const getFormValidation = () => {
 
 disableForm(mapFilters);//блочим карту
 resetAdForm();
-
 getFormValidation();
 
