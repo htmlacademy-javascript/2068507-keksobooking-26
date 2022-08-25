@@ -1,5 +1,6 @@
+import {addDisableForm} from './util.js';
+
 const adForm = document.querySelector('.ad-form');
-const mapFilters = document.querySelector('.map__filters');
 const housingTypeInput = adForm.querySelector('#type');
 const priceInput = adForm.querySelector('#price');
 const checkInInput = adForm.querySelector('#timein');
@@ -7,6 +8,8 @@ const checkOutInput = adForm.querySelector('#timeout');
 const roomNumberInput = adForm.querySelector('#room_number');
 const capacityInput = adForm.querySelector('#capacity');
 
+//слайдер на инпут прайса
+const sliderElement = document.querySelector('.ad-form__slider');
 
 const ROOM_CAPACITY = {
   '1': ['1'],
@@ -34,15 +37,10 @@ const pristine = new Pristine (adForm,
   }
 );
 
-//функция для деактивации форм
-const disableForm = (form) => {
-  form.classList.add(`${form.classList[0]}--disabled`);
-};
-
 //функция для очистки формы и возвращения к первоначальным значениям
 const resetAdForm = () => {
   priceInput.placeholder = MIN_PRICE_OF_HOUSING[housingTypeInput.value];
-  capacityInput.value = '3';
+  capacityInput.value = '2';
 
 };
 
@@ -59,11 +57,49 @@ const getPriceErrorMessage = () => {
     //если в верхней функции false то выдает как ощибку с описанием
   }
 };
+//создание слайдера
+// sliderElement.value = 1000;//начальная цена
+noUiSlider.create(sliderElement, {
+  range: {
+    min: 0,
+    max: 100000,
+  },
+  start: 1000,
+  step: 1,
+  connect: 'upper',
+  format: {
+    to: function (value) {// to обращение к set
+      if (Number.isInteger(value)) {//isInteger проеряет целочисленное число
+        return value.toFixed(0);
+      }
+      return value.toFixed(0);//знаков после запятой
+    },
+    from: function (value) {//from обращение  к get
+      return parseFloat(value);
+    },
+  },
+});
 
-//функция  обработки изменения поля с выбором жилья
+// способ блокировки слайдера
+sliderElement.setAttribute('disabled', true);//заблокировать слайдер
+sliderElement.removeAttribute('disabled');//разблокировать слайдер
+//способ удаления слайдера
+// sliderElement.noUiSlider.destroy();
+
+//функция  обработки изменения поля с выбором жилья и параметры  сладера в зависимости от вбора жилья
 const onHousingTypeInputChange = () => {
-  priceInput.min = MIN_PRICE_OF_HOUSING[housingTypeInput.value];
-  priceInput.placeholder = MIN_PRICE_OF_HOUSING[housingTypeInput.value];
+  const priseMinPlaceholder = MIN_PRICE_OF_HOUSING[housingTypeInput.value];
+  priceInput.min = priseMinPlaceholder;
+  priceInput.value = priseMinPlaceholder ;
+  sliderElement.noUiSlider.updateOptions({
+    range: {
+      min: priseMinPlaceholder,
+      max: 100000,
+    },
+    start: priseMinPlaceholder,
+    step: 1,
+  });
+  // sliderElement.noUiSlider.set(priseMinPlaceholder);// альтернатива старта
 };
 
 //функции для валидации полей с количеством комнат и количеством гостей и генерация сообщения об ошибке
@@ -76,26 +112,31 @@ const onAdFormSubmit = (evt) => {
   if (!isValid) {
     evt.preventDefault();
   } else {
-    disableForm(adForm);//блокируем форму после нажатия
+    addDisableForm(adForm);//блокируем форму после нажатия
   }
 };
 
 //функция из всех функций связянных с валидацией и отправкой формы
 const getFormValidation = () => {
   adForm.addEventListener('submit', onAdFormSubmit);
-
+//блок прайса и типа жилья
   pristine.addValidator(priceInput, validatePriceInput, getPriceErrorMessage);//1 елемент, 2 если тру 3 если false
   housingTypeInput.addEventListener('change', onHousingTypeInputChange);
-
+//валидация комнат и кол-ва человек
   pristine.addValidator(capacityInput, validateRoomNumberInput, getCapacityErrorMessage);
   pristine.addValidator(roomNumberInput, validateRoomNumberInput, getCapacityErrorMessage);
 
   checkInInput.addEventListener('change', onCheckInOutInputChange);//использу одну функцию чтоб синхронизировать время
   checkOutInput.addEventListener('change', onCheckInOutInputChange);
+
+  sliderElement.noUiSlider.on('update', (/*...rest*/) => {
+    // console.log(rest);
+    priceInput.value = sliderElement.noUiSlider.get();//слайдер переносит в поле цену
+  });
 };
 
 
-disableForm(mapFilters);//блочим карту
+// disableForm(mapFilters);//блочим карту
 resetAdForm();
 getFormValidation();
 

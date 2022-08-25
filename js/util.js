@@ -13,4 +13,13 @@ const getRandomValue = (value) => { //рандомный элемент из о�
   return value[random];
 };
 
-export {getRandomPositiveNumber, getRandomValue};
+//функция для деактивации форм
+const addDisableForm = (form) => {
+  form.classList.add(`${form.classList[0]}--disabled`);
+};
+const removeDisableForm = (form) => {
+  form.classList.remove(`${form.classList[0]}--disabled`);
+};
+
+export {getRandomPositiveNumber, getRandomValue, addDisableForm, removeDisableForm};
+
