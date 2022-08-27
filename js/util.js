@@ -4,7 +4,7 @@ const getRandomPositiveNumber = (min, max, fraction) => { //рандомное �
     const rand = Math.random() * (max - min) + min;
     return rand.toFixed(fraction);
   // } else {
-  //   console.log('передан неверный диапазон');
+  //   console.log('передан неверный диапазон');//доделать
   }
 };
 

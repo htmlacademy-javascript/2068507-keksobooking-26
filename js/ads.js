@@ -3,7 +3,7 @@ import {addDisableForm, removeDisableForm} from './util.js';
 
 const mapFilters = document.querySelector('.map__filters');
 const mapCanvastContainer = document.querySelector('#map-canvas');
-addDisableForm(mapCanvastContainer); //не могу понять как правильно, здесь оставить или в низ кода опустить
+addDisableForm(mapCanvastContainer);
 addDisableForm(mapFilters);
 
 const TypesDescription = {
@@ -50,7 +50,7 @@ const createImage = (srcKey) => {
 //функция на отрисовку в балуне с помощью темплейта
 const getPopupToMap = ({author: {avatar}, offer: {title, address, price, type, rooms, guests, checkin, checkout, features, description, photos}}) => {
   const cardElementTemplate = document.querySelector('#card').content.querySelector('article.popup');
-  const relatedAds = cardElementTemplate.cloneNode(true);//создаю клон шаблона с данными
+  const relatedAds = cardElementTemplate.cloneNode(true);
 
   const popupPhotos = relatedAds.querySelector('.popup__photos');
   const popupPhoto = relatedAds.querySelector('.popup__photo');
@@ -73,7 +73,7 @@ const getPopupToMap = ({author: {avatar}, offer: {title, address, price, type, r
   }
   popupPhoto.remove();
 
-  // с помощью some сравниваю сгенерарованные features с строками в HTML
+  //проверяю есть ли элемент feature в объявлении и если нету удаляю из ДОМ строку
   featureList.forEach((featureListItem) => {
     const isNecessary = featuresItem.some((feature) =>
       featureListItem.classList.contains(`popup__feature--${feature}`));//конструкция проверки
@@ -135,7 +135,7 @@ const createMarkers = (point)=>{
     .addTo(markerGroup)// добавляем в карту
     .bindPopup(getPopupToMap(point));
 };
-//обрабатываем массив форичом и добавляем на карту несколько меток
+//с помощью форича ищем кординаты и добавляем на карту несколько меток
 randomObjectUser.forEach((point) => {
   createMarkers(point);
 });
@@ -150,13 +150,13 @@ const mainPinMarker = L.marker({
   icon: mainPinIcon,
 },);
 mainPinMarker.addTo(map);//добавляем маркер на карту
+//ниже КОД Я пока оставлю, для следующий заданий
 // .bindPopup();
 // mainPinMarker.on('moveend', (evt)=>{
 //   console.log(evt.target.getLatLng());//создать отрисовку в координаты
 // });
 
 //проверка координат
-
 // resetButton.addEventListener('click', ()=>{
 // //возврат маркера
 //   mainPinMarker.setLatLng({
@@ -173,7 +173,6 @@ mainPinMarker.addTo(map);//добавляем маркер на карту
 
 //удаление метки
 //mainPinMarker.remove();
-
 //очистить слой
 //markerGroup.clearLayers()
 
