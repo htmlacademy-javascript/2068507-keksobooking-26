@@ -119,10 +119,12 @@ const onAdFormSubmit = (evt) => {
 //функция из всех функций связянных с валидацией и отправкой формы
 const getFormValidation = () => {
   adForm.addEventListener('submit', onAdFormSubmit);
-//блок прайса и типа жилья
+
+  //блок прайса и типа жилья
   pristine.addValidator(priceInput, validatePriceInput, getPriceErrorMessage);//1 елемент, 2 если тру 3 если false
   housingTypeInput.addEventListener('change', onHousingTypeInputChange);
-//валидация комнат и кол-ва человек
+
+  //валидация комнат и кол-ва человек
   pristine.addValidator(capacityInput, validateRoomNumberInput, getCapacityErrorMessage);
   pristine.addValidator(roomNumberInput, validateRoomNumberInput, getCapacityErrorMessage);
 
@@ -135,8 +137,6 @@ const getFormValidation = () => {
   });
 };
 
-
-// disableForm(mapFilters);//блочим карту
 resetAdForm();
 getFormValidation();
 
