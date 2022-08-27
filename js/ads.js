@@ -1,4 +1,10 @@
 import {randomObjectUser} from './data.js';
+import {addDisableForm, removeDisableForm} from './util.js';
+
+const mapFilters = document.querySelector('.map__filters');
+const mapCanvastContainer = document.querySelector('#map-canvas');
+addDisableForm(mapCanvastContainer);
+addDisableForm(mapFilters);
 
 const TypesDescription = {
   flat : 'Квартира',
@@ -41,52 +47,132 @@ const createImage = (srcKey) => {
   return newImage;
 };
 
-const cardElementTemplate = document.querySelector('#card').content.querySelector('article.popup');
-const mapCanvastContainer = document.querySelector('#map-canvas');
-const createCardElementFragment = document.createDocumentFragment();
+//функция на отрисовку в балуне с помощью темплейта
+const getPopupToMap = ({author: {avatar}, offer: {title, address, price, type, rooms, guests, checkin, checkout, features, description, photos}}) => {
+  const cardElementTemplate = document.querySelector('#card').content.querySelector('article.popup');
+  const relatedAds = cardElementTemplate.cloneNode(true);
 
-const getRelatedAds = () => {
-  mapCanvastContainer.innerHTML = '';
+  const popupPhotos = relatedAds.querySelector('.popup__photos');
+  const popupPhoto = relatedAds.querySelector('.popup__photo');
 
-  randomObjectUser.forEach(({author: {avatar}, offer: {title, address, price, type, rooms, guests, checkin, checkout, features, description, photos}}) => {
-    const relatedAds = cardElementTemplate.cloneNode(true);//создаю клон шаблона с данными
+  const featureList = relatedAds.querySelectorAll('.popup__feature');
+  const featuresItem = features;
 
-    const popupPhotos = relatedAds.querySelector('.popup__photos');
-    const popupPhoto = relatedAds.querySelector('.popup__photo');
+  checkDataPresentation(relatedAds, {title, address,price, type, rooms, guests, checkin, checkout, features, description, photos});
+  relatedAds.querySelector('.popup__title').textContent = title;
+  relatedAds.querySelector('.popup__text--price').textContent = `${price} ₽/ночь`;
+  relatedAds.querySelector('.popup__type').textContent = TypesDescription[type];
+  relatedAds.querySelector('.popup__text--address').textContent = address;
+  relatedAds.querySelector('.popup__text--capacity').textContent = `${rooms} комнаты для ${guests} гостей`;
+  relatedAds.querySelector('.popup__text--time').textContent = `Заезд после ${checkin}, выезд до ${checkout}`;
+  relatedAds.querySelector('.popup__description').textContent = description;
+  relatedAds.querySelector('.popup__avatar').src = avatar;
+  //добавить фотографии
+  for(let i = 0; i< photos.length; i++){
+    popupPhotos.append(createImage(photos[i]));
+  }
+  popupPhoto.remove();
 
-    const featureList = relatedAds.querySelectorAll('.popup__feature');
-    const featuresItem = features;
-
-    checkDataPresentation(relatedAds, {title, address,price, type, rooms, guests, checkin, checkout, features, description, photos});
-
-    relatedAds.querySelector('.popup__title').textContent = title;
-    relatedAds.querySelector('.popup__text--price').textContent = `${price} ₽/ночь`;
-    relatedAds.querySelector('.popup__type').textContent = TypesDescription[type];
-    relatedAds.querySelector('.popup__text--address').textContent = address;
-    relatedAds.querySelector('.popup__text--capacity').textContent = `${rooms} комнаты для ${guests} гостей`;
-    relatedAds.querySelector('.popup__text--time').textContent = `Заезд после ${checkin}, выезд до ${checkout}`;
-    relatedAds.querySelector('.popup__description').textContent = description;
-    relatedAds.querySelector('.popup__avatar').src = avatar;
-
-    //добавить фотографии
-    for(let i = 0; i< photos.length; i++){
-      popupPhotos.append(createImage(photos[i]));
+  //проверяю есть ли элемент feature в объявлении и если нету удаляю из ДОМ строку
+  featureList.forEach((featureListItem) => {
+    const isNecessary = featuresItem.some((feature) =>
+      featureListItem.classList.contains(`popup__feature--${feature}`));//конструкция проверки
+    if(!isNecessary){
+      featureListItem.remove();
     }
-    popupPhoto.remove();
+  });
 
-    //с помощью some сравниваю сгенерарованные features с строками в HTML
-    featureList.forEach((featureListItem) => {
-      const isNecessary = featuresItem.some((feature) =>
-        featureListItem.classList.contains(`popup__feature--${feature}`));//конструкция проверки
-      if(!isNecessary){
-        featureListItem.remove();
-      }
+  return relatedAds;
+};
+
+//подключаем лифлет
+const map = L.map('map-canvas')
+  .on('load', ()=>{//отключаем блокировки карты
+    removeDisableForm(mapFilters);
+    removeDisableForm(mapCanvastContainer);
+  })
+  .setView({
+    lat: 35.70876,
+    lng: 139.74078,
+  }, 16);
+
+//слой карта
+L.tileLayer(
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  },
+).addTo(map);
+
+//подключаем заготовленные иконки
+const pinIcon = L.icon({
+  iconUrl: './img/pin.svg',
+  iconSize: [52, 52],
+  iconAnchor: [26, 52],//пареметры указателя иконки
+});
+
+const mainPinIcon = L.icon({
+  iconUrl: './img/main-pin.svg',
+  iconSize: [52, 52],
+  iconAnchor: [26, 52],
+});
+
+//слой для фильтрации
+const markerGroup = L.layerGroup().addTo(map);
+//функция создания меток
+const createMarkers = (point)=>{
+  const {lat, lng} = point.location ; //где же такое видано?
+  const marker = L.marker(
+    {
+      lat,
+      lng,
+    },
+    {
+      icon: pinIcon,
     });
 
-    createCardElementFragment.append(relatedAds);
-  });
-  mapCanvastContainer.append(createCardElementFragment.lastElementChild);
-  //добавил в блок первый элемен форича
+  marker
+    .addTo(markerGroup)// добавляем в карту
+    .bindPopup(getPopupToMap(point));
 };
-//console.log(mapCanvastContainer);
-export {getRelatedAds};
+//с помощью форича ищем кординаты и добавляем на карту несколько меток
+randomObjectUser.forEach((point) => {
+  createMarkers(point);
+});
+
+//настройки главного маркера
+const mainPinMarker = L.marker({
+  lat: 35.70876,
+  lng: 139.74078,
+},
+{
+  draggable: true,//метку можно перемещать по карте
+  icon: mainPinIcon,
+},);
+mainPinMarker.addTo(map);//добавляем маркер на карту
+//ниже КОД Я пока оставлю, для следующий заданий
+// .bindPopup();
+// mainPinMarker.on('moveend', (evt)=>{
+//   console.log(evt.target.getLatLng());//создать отрисовку в координаты
+// });
+
+//проверка координат
+// resetButton.addEventListener('click', ()=>{
+// //возврат маркера
+//   mainPinMarker.setLatLng({
+//     lat: 59.96831,
+//     lng: 30.31748,
+//   });
+
+//   //возврат на правильный масштаб и фокус
+//   map.setView({
+//     lat: 59.96831,
+//     lng: 30.31748,
+//   }, 16);
+// });
+
+//удаление метки
+//mainPinMarker.remove();
+//очистить слой
+//markerGroup.clearLayers()
+

@@ -40,8 +40,8 @@ const PHOTOS = [
 
 //генерация локации
 const generateLocatoin = () =>({
-  lat: getRandomPositiveNumber( 35.65000, 35.70000, 5),
-  lng: getRandomPositiveNumber( 139.70000, 139.80000, 5)
+  lat: getRandomPositiveNumber( 35.30876, 35.90876, 5),
+  lng: getRandomPositiveNumber( 139.34078, 140.74078, 5)
 });
 
 //фото аватара
@@ -66,7 +66,7 @@ const getArrayValues = (id) =>{
 // строка offer
 const getOfferArray = (locat) => ({
   title: getRandomValue(TITLE_TEXT),
-  adress: ` ${locat.lat}, ${locat.lng}`,
+  address: `${locat.lat}, ${locat.lng}`,
   price: getRandomPositiveNumber(5000, 10000, 0),
   type: getRandomValue(TYPE_ARRAY),
   rooms: getRandomPositiveNumber(1, 2, 0),
