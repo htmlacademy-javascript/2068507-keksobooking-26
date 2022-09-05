@@ -60,4 +60,3 @@ const showAlertSuccess = (time) => {
 };
 
 export {getRandomPositiveNumber, getRandomValue, addDisableForm, removeDisableForm, showAlertErrLoad, showAlertError, showAlertSuccess};
-

@@ -12,8 +12,6 @@ const roomNumberInput = adForm.querySelector('#room_number');
 const capacityInput = adForm.querySelector('#capacity');
 const submitButton = adForm.querySelector('.ad-form__submit');
 
-
-
 //слайдер на инпут прайса
 const sliderElement = document.querySelector('.ad-form__slider');
 
@@ -51,7 +49,6 @@ const resetAdForm = () => {
   //добавить сброс фильтров
 };
 
-
 // две функции блокировки и разблокировки кнопки
 const blockSubmitButton = () => {
   submitButton.disable = true;
@@ -79,7 +76,7 @@ const setUserFormSubmit = (onSuccess) =>{
           },
           () => {
             showAlertError();
-            unblockSubmitButton();//разблок
+            unblockSubmitButton();//разблок кнопку после ошибки
           },
           new FormData(evt.target),
         );
@@ -87,6 +84,7 @@ const setUserFormSubmit = (onSuccess) =>{
     }
   );
 };
+
 //(2)функции для валидации поля с ценой в зависимости от выбранного типа жилья и генерации сообщения об ошибке
 const validatePriceInput = () => priceInput.value >= MIN_PRICE_OF_HOUSING[housingTypeInput.value];//сравниваем => получаем тру или фолс
 const getPriceErrorMessage = () => {
@@ -95,7 +93,6 @@ const getPriceErrorMessage = () => {
     //если в верхней функции false то выдает как ощибку с описанием
   }
 };
-
 //создание слайдера
 noUiSlider.create(sliderElement, {
   range: {
@@ -172,4 +169,3 @@ const getFormValidation = () => {
 };
 
 getFormValidation();
-

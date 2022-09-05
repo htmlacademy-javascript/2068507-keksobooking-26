@@ -1,4 +1,3 @@
-// import {randomObjectUser} from './data.js';
 import {addDisableForm, removeDisableForm} from './util.js';
 
 const mapFilters = document.querySelector('.map__filters');
@@ -38,15 +37,15 @@ const checkDataPresentation = (addClassHidden, array) => {
 
 //функция для отрисовки аппартаментов
 // const popupPhotosObject = (photos)=>{
-  const createImage = (srcKey) => {
-    const newImage = document.createElement('img');
-    newImage.classList.add('.popup__photo');
-    newImage.width = '45';
-    newImage.height = '40';
-    newImage.alt = 'Фото жилья';
-    newImage.src = srcKey;
-    return newImage;
-  };
+const createImage = (srcKey) => {
+  const newImage = document.createElement('img');
+  newImage.classList.add('.popup__photo');
+  newImage.width = '45';
+  newImage.height = '40';
+  newImage.alt = 'Фото жилья';
+  newImage.src = srcKey;
+  return newImage;
+};
 //   const popupPhotos = document.querySelector('.popup__photos');
 //   const popupPhoto = document.querySelector('.popup__photo');
 
