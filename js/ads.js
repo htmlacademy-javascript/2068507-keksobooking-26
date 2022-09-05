@@ -1,4 +1,4 @@
-import {randomObjectUser} from './data.js';
+// import {randomObjectUser} from './data.js';
 import {addDisableForm, removeDisableForm} from './util.js';
 
 const mapFilters = document.querySelector('.map__filters');
@@ -37,16 +37,24 @@ const checkDataPresentation = (addClassHidden, array) => {
 };
 
 //функция для отрисовки аппартаментов
-const createImage = (srcKey) => {
-  const newImage = document.createElement('img');
-  newImage.classList.add('.popup__photo');
-  newImage.width = '45';
-  newImage.height = '40';
-  newImage.alt = 'Фото жилья';
-  newImage.src = srcKey;
-  return newImage;
-};
+// const popupPhotosObject = (photos)=>{
+  const createImage = (srcKey) => {
+    const newImage = document.createElement('img');
+    newImage.classList.add('.popup__photo');
+    newImage.width = '45';
+    newImage.height = '40';
+    newImage.alt = 'Фото жилья';
+    newImage.src = srcKey;
+    return newImage;
+  };
+//   const popupPhotos = document.querySelector('.popup__photos');
+//   const popupPhoto = document.querySelector('.popup__photo');
 
+//   for(let i = 0; i< photos.length; i++){
+//     popupPhotos.append(createImage(photos[i]));
+//   }
+//   popupPhoto.remove();
+// };
 //функция на отрисовку в балуне с помощью темплейта
 const getPopupToMap = ({author: {avatar}, offer: {title, address, price, type, rooms, guests, checkin, checkout, features, description, photos}}) => {
   const cardElementTemplate = document.querySelector('#card').content.querySelector('article.popup');
@@ -68,20 +76,24 @@ const getPopupToMap = ({author: {avatar}, offer: {title, address, price, type, r
   relatedAds.querySelector('.popup__description').textContent = description;
   relatedAds.querySelector('.popup__avatar').src = avatar;
   //добавить фотографии
-  for(let i = 0; i< photos.length; i++){
-    popupPhotos.append(createImage(photos[i]));
-  }
-  popupPhoto.remove();
-
-  //проверяю есть ли элемент feature в объявлении и если нету удаляю из ДОМ строку
-  featureList.forEach((featureListItem) => {
-    const isNecessary = featuresItem.some((feature) =>
-      featureListItem.classList.contains(`popup__feature--${feature}`));//конструкция проверки
-    if(!isNecessary){
-      featureListItem.remove();
+  if(photos !== undefined){//проверка на наличие фотографий
+    for(let i = 0; i< photos.length; i++){
+      popupPhotos.append(createImage(photos[i]));
     }
-  });
-
+    popupPhoto.remove();
+  } else {
+    popupPhoto.remove();
+  }
+  // //проверяю есть ли элемент feature в объявлении и если нету удаляю из ДОМ строку
+  if(features !== undefined){
+    featureList.forEach((featureListItem) => {
+      const isNecessary = featuresItem.some((feature) =>
+        featureListItem.classList.contains(`popup__feature--${feature}`));//конструкция проверки
+      if(!isNecessary){
+        featureListItem.remove();
+      }
+    });
+  }
   return relatedAds;
 };
 
@@ -135,11 +147,13 @@ const createMarkers = (point)=>{
     .addTo(markerGroup)// добавляем в карту
     .bindPopup(getPopupToMap(point));
 };
-//с помощью форича ищем кординаты и добавляем на карту несколько меток
-randomObjectUser.forEach((point) => {
-  createMarkers(point);
-});
 
+const renderSimilarList = (rooms)=>{
+//с помощью форича ищем кординаты и добавляем на карту несколько меток
+  rooms.forEach((point) => {
+    createMarkers(point);
+  });
+};
 //настройки главного маркера
 const mainPinMarker = L.marker({
   lat: 35.70876,
@@ -175,4 +189,4 @@ mainPinMarker.addTo(map);//добавляем маркер на карту
 //mainPinMarker.remove();
 //очистить слой
 //markerGroup.clearLayers()
-
+export {renderSimilarList};

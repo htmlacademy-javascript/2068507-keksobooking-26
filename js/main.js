@@ -1,6 +1,6 @@
-import './util.js';
+// import './util.js';
 import './data.js';
-import './ads.js';
 import './form.js';
-
-
+import {renderSimilarList} from './ads.js';
+import {getData} from './api.js';
+getData(renderSimilarList);
