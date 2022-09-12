@@ -1,5 +1,5 @@
 import {state} from './data.js';
-import {renderMarkersWithDebounce} from './map.js';
+import {renderMarkersWithDebounce} from './ads.js';
 
 const DEFAULT_VALUE = 'any';
 const LOW_PRICE_VALUE = 10000;

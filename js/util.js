@@ -1,19 +1,19 @@
 const TIMEOUT_DELAY = 500;
 
-const getRandomPositiveNumber = (min, max, fraction) => { //рандомное число с количеством 0 после запятой
-  const isRangeCorrect = min <= max && min >= 0;
-  if(isRangeCorrect){
-    const rand = Math.random() * (max - min) + min;
-    return rand.toFixed(fraction);
-  // } else {
-  //   console.log('передан неверный диапазон');//доделать
-  }
-};
+// const getRandomPositiveNumber = (min, max, fraction) => { //рандомное число с количеством 0 после запятой
+//   const isRangeCorrect = min <= max && min >= 0;
+//   if(isRangeCorrect){
+//     const rand = Math.random() * (max - min) + min;
+//     return rand.toFixed(fraction);
+//   // } else {
+//   //   console.log('передан неверный диапазон');//доделать
+//   }
+// };
 
-const getRandomValue = (value) => { //рандомный элемент из объекта
-  const random = Math.floor(Math.random() * value.length);
-  return value[random];
-};
+// const getRandomValue = (value) => { //рандомный элемент из объекта
+//   const random = Math.floor(Math.random() * value.length);
+//   return value[random];
+// };
 
 //функция для деактивации форм
 const addDisableForm = (form) => {
@@ -70,4 +70,4 @@ const debounce = (callback, timeoutDelay = TIMEOUT_DELAY) =>{
   };
 };
 
-export {getRandomPositiveNumber, getRandomValue, addDisableForm, removeDisableForm, showAlertErrLoad, showAlertError, showAlertSuccess, debounce, TIMEOUT_DELAY};
+export {addDisableForm, removeDisableForm, showAlertErrLoad, showAlertError, showAlertSuccess, debounce, TIMEOUT_DELAY};

@@ -1,7 +1,8 @@
 import {addDisableForm, removeDisableForm, showAlertError, showAlertSuccess} from './util.js';
 import {sendData} from './api.js';
-import {mapFilters, mainPinMarker, DEFAULT_LAT_LNG, ZOOM, map} from './ads.js';
-
+import {mapFilters, mainPinMarker, DEFAULT_LAT_LNG, ZOOM, map, renderMarkersWithDebounce} from './ads.js';
+import {state} from './data.js';
+// import {resetUploadImg} from './load-img';
 const ALERT_SHOW_TIME = 5000;
 
 const adForm = document.querySelector('.ad-form');
@@ -77,8 +78,9 @@ const resetAdForm = () => {
   priceInput.value = MIN_PRICE_OF_HOUSING[housingTypeInput.value];
   sliderElement.noUiSlider.reset();
   capacityInput.value = '1';
-
+  renderMarkersWithDebounce(state.adverts.slice(0, 10));
   mapFilters.reset();
+  // resetUpload();
   mainPinMarker.setLatLng({
     lat: DEFAULT_LAT_LNG.lat,
     lng: DEFAULT_LAT_LNG.lng,
@@ -138,11 +140,10 @@ const getPriceErrorMessage = () => {
 //(3)функция  обработки изменения поля с выбором жилья и параметры  сладера в зависимости от вбора жилья
 const onHousingTypeInputChange = () => {
   const priseMinPlaceholder = MIN_PRICE_OF_HOUSING[housingTypeInput.value];
-  priceInput.min = priseMinPlaceholder;
   priceInput.value = priseMinPlaceholder ;
   sliderElement.noUiSlider.updateOptions({
     range: {
-      min: priseMinPlaceholder,
+      min: 0,
       max: 100000,
     },
     start: priseMinPlaceholder,
@@ -185,6 +186,7 @@ const getFormValidation = () => {
   resetSubmit.addEventListener('click', (evt)=>{
     evt.preventDefault();
     resetAdForm();
+    // resetUploadImg();
   });
 };
 
