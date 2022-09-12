@@ -1,3 +1,5 @@
+const TIMEOUT_DELAY = 500;
+
 const getRandomPositiveNumber = (min, max, fraction) => { //рандомное число с количеством 0 после запятой
   const isRangeCorrect = min <= max && min >= 0;
   if(isRangeCorrect){
@@ -59,4 +61,13 @@ const showAlertSuccess = (time) => {
   }, time);
 };
 
-export {getRandomPositiveNumber, getRandomValue, addDisableForm, removeDisableForm, showAlertErrLoad, showAlertError, showAlertSuccess};
+const debounce = (callback, timeoutDelay = TIMEOUT_DELAY) =>{
+  let timeoutId;
+
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+};
+
+export {getRandomPositiveNumber, getRandomValue, addDisableForm, removeDisableForm, showAlertErrLoad, showAlertError, showAlertSuccess, debounce, TIMEOUT_DELAY};

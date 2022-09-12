@@ -1,7 +1,14 @@
-import {addDisableForm, removeDisableForm} from './util.js';
+import {addDisableForm,removeDisableForm, debounce} from './util.js';
+
+const ZOOM = 12;
+const DEFAULT_LAT_LNG = {
+  lat: 35.65952,
+  lng: 139.78179,
+};
 
 const mapFilters = document.querySelector('.map__filters');
 const mapCanvastContainer = document.querySelector('#map-canvas');
+const addressInputElement = document.querySelector('#address');
 addDisableForm(mapCanvastContainer);
 addDisableForm(mapFilters);
 
@@ -25,7 +32,10 @@ const OfferKeys = {
   description: 'description',
   photos: 'photos',
 };
-
+const makeFormActive = () => {
+  removeDisableForm(mapFilters);
+  removeDisableForm(mapCanvastContainer);
+};
 //похищенная функция у соседа для скрытия пустых полей
 const checkDataPresentation = (addClassHidden, array) => {
   Object.keys(array).forEach((key) => {
@@ -46,15 +56,7 @@ const createImage = (srcKey) => {
   newImage.src = srcKey;
   return newImage;
 };
-//   const popupPhotos = document.querySelector('.popup__photos');
-//   const popupPhoto = document.querySelector('.popup__photo');
 
-//   for(let i = 0; i< photos.length; i++){
-//     popupPhotos.append(createImage(photos[i]));
-//   }
-//   popupPhoto.remove();
-// };
-//функция на отрисовку в балуне с помощью темплейта
 const getPopupToMap = ({author: {avatar}, offer: {title, address, price, type, rooms, guests, checkin, checkout, features, description, photos}}) => {
   const cardElementTemplate = document.querySelector('#card').content.querySelector('article.popup');
   const relatedAds = cardElementTemplate.cloneNode(true);
@@ -96,16 +98,18 @@ const getPopupToMap = ({author: {avatar}, offer: {title, address, price, type, r
   return relatedAds;
 };
 
+//функция
+function onDefaultMap () {
+  addressInputElement.value = `${DEFAULT_LAT_LNG.lat} ${DEFAULT_LAT_LNG.lng}`;
+}
+
 //подключаем лифлет
 const map = L.map('map-canvas')
-  .on('load', ()=>{//отключаем блокировки карты
-    removeDisableForm(mapFilters);
-    removeDisableForm(mapCanvastContainer);
-  })
+  .on('load', onDefaultMap)
   .setView({
     lat: 35.70876,
     lng: 139.74078,
-  }, 16);
+  }, ZOOM);
 
 //слой карта
 L.tileLayer(
@@ -132,11 +136,11 @@ const mainPinIcon = L.icon({
 const markerGroup = L.layerGroup().addTo(map);
 //функция создания меток
 const createMarkers = (point)=>{
-  const {lat, lng} = point.location ; //где же такое видано?
+  // const {lat, lng} = point.location ;
   const marker = L.marker(
     {
-      lat,
-      lng,
+      lat: point.location.lat,
+      lng: point.location.lng,
     },
     {
       icon: pinIcon,
@@ -147,12 +151,6 @@ const createMarkers = (point)=>{
     .bindPopup(getPopupToMap(point));
 };
 
-const renderSimilarList = (rooms)=>{
-//с помощью форича ищем кординаты и добавляем на карту несколько меток
-  rooms.forEach((point) => {
-    createMarkers(point);
-  });
-};
 //настройки главного маркера
 const mainPinMarker = L.marker({
   lat: 35.70876,
@@ -163,29 +161,16 @@ const mainPinMarker = L.marker({
   icon: mainPinIcon,
 },);
 mainPinMarker.addTo(map);//добавляем маркер на карту
-//ниже КОД Я пока оставлю, для следующий заданий
-// .bindPopup();
-// mainPinMarker.on('moveend', (evt)=>{
-//   console.log(evt.target.getLatLng());//создать отрисовку в координаты
-// });
 
-//проверка координат
-// resetButton.addEventListener('click', ()=>{
-// //возврат маркера
-//   mainPinMarker.setLatLng({
-//     lat: 59.96831,
-//     lng: 30.31748,
-//   });
+const renderMarkers = (offers) => {
+  markerGroup.clearLayers();//очищаем слой
+  offers.forEach((offer) => createMarkers(offer));//перебираем элементы
+};
+const initMap = (offers) => {
+  renderMarkers(offers);
+  makeFormActive();//ремов дисэйбла
+};
 
-//   //возврат на правильный масштаб и фокус
-//   map.setView({
-//     lat: 59.96831,
-//     lng: 30.31748,
-//   }, 16);
-// });
+const renderMarkersWithDebounce = (offers) => debounce(() => renderMarkers(offers))();
+export {createMarkers, markerGroup, mapFilters,  mainPinMarker, DEFAULT_LAT_LNG, ZOOM, map, renderMarkersWithDebounce, initMap};
 
-//удаление метки
-//mainPinMarker.remove();
-//очистить слой
-//markerGroup.clearLayers()
-export {renderSimilarList};

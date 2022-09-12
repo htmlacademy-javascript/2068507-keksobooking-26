@@ -1,5 +1,6 @@
 import {addDisableForm, removeDisableForm, showAlertError, showAlertSuccess} from './util.js';
 import {sendData} from './api.js';
+import {mapFilters, mainPinMarker, DEFAULT_LAT_LNG, ZOOM, map} from './ads.js';
 
 const ALERT_SHOW_TIME = 5000;
 
@@ -10,7 +11,10 @@ const checkInInput = adForm.querySelector('#timein');
 const checkOutInput = adForm.querySelector('#timeout');
 const roomNumberInput = adForm.querySelector('#room_number');
 const capacityInput = adForm.querySelector('#capacity');
+// const addressInput = adForm.querySelector('address');
+
 const submitButton = adForm.querySelector('.ad-form__submit');
+const resetSubmit = adForm.querySelector('.ad-form__reset');
 
 //слайдер на инпут прайса
 const sliderElement = document.querySelector('.ad-form__slider');
@@ -41,58 +45,6 @@ const pristine = new Pristine (adForm,
     errorTextTag: 'div'
   }
 );
-//функция для очистки формы и возвращения к первоначальным значениям
-const resetAdForm = () => {
-  adForm.reset(); //аналог кнопки reset
-  priceInput.placeholder = MIN_PRICE_OF_HOUSING[housingTypeInput.value];
-  capacityInput.value = '1';
-  //добавить сброс фильтров
-};
-
-// две функции блокировки и разблокировки кнопки
-const blockSubmitButton = () => {
-  submitButton.disable = true;
-  submitButton.textContent = 'Сохраняю...';
-  addDisableForm(adForm);  //блокируем форму после нажатия
-};
-const unblockSubmitButton = () => {
-  submitButton.disabled = false;
-  submitButton.textContent = 'Опубликовать';
-  removeDisableForm(adForm);
-};
-
-//(1)функция обработки события отправки формы для передачи по ссылке
-const setUserFormSubmit = (onSuccess) =>{
-  adForm.addEventListener('submit',
-    (evt) => {
-      evt.preventDefault();
-      const isValid = pristine.validate();
-      if (isValid) {
-        blockSubmitButton();
-        sendData(//функция отправки на сервер
-          () => {onSuccess();
-            showAlertSuccess(ALERT_SHOW_TIME);
-            unblockSubmitButton();
-          },
-          () => {
-            showAlertError();
-            unblockSubmitButton();//разблок кнопку после ошибки
-          },
-          new FormData(evt.target),
-        );
-      }
-    }
-  );
-};
-
-//(2)функции для валидации поля с ценой в зависимости от выбранного типа жилья и генерации сообщения об ошибке
-const validatePriceInput = () => priceInput.value >= MIN_PRICE_OF_HOUSING[housingTypeInput.value];//сравниваем => получаем тру или фолс
-const getPriceErrorMessage = () => {
-  if (priceInput.value <= MIN_PRICE_OF_HOUSING[housingTypeInput.value]) {
-    return `минимальная стоимость за ночь ${MIN_PRICE_OF_HOUSING[housingTypeInput.value]}`;
-    //если в верхней функции false то выдает как ощибку с описанием
-  }
-};
 //создание слайдера
 noUiSlider.create(sliderElement, {
   range: {
@@ -117,8 +69,71 @@ noUiSlider.create(sliderElement, {
 // способ блокировки слайдера
 sliderElement.setAttribute('disabled', true);//заблокировать слайдер
 sliderElement.removeAttribute('disabled');//разблокировать слайдер
-//способ удаления слайдера оставил ПРОЗАПАС
-// sliderElement.noUiSlider.destroy();
+
+
+//функция для очистки формы и возвращения к первоначальным значениям
+const resetAdForm = () => {
+  adForm.reset(); //аналог кнопки reset
+  priceInput.value = MIN_PRICE_OF_HOUSING[housingTypeInput.value];
+  sliderElement.noUiSlider.reset();
+  capacityInput.value = '1';
+
+  mapFilters.reset();
+  mainPinMarker.setLatLng({
+    lat: DEFAULT_LAT_LNG.lat,
+    lng: DEFAULT_LAT_LNG.lng,
+  });
+  map.setView(DEFAULT_LAT_LNG, ZOOM);
+
+
+  //добавить сброс фильтров
+};
+
+// две функции блокировки и разблокировки кнопки
+const blockSubmitButton = () => {
+  submitButton.disable = true;
+  submitButton.textContent = 'Сохраняю...';
+  addDisableForm(adForm);  //блокируем форму после нажатия
+};
+const unblockSubmitButton = () => {
+  submitButton.disabled = false;
+  submitButton.textContent = 'Опубликовать';
+  removeDisableForm(adForm);
+};
+
+
+//(1)функция обработки события отправки формы для передачи по ссылке
+const setUserFormSubmit = (onSuccess) =>{
+  adForm.addEventListener('submit',
+    (evt) => {
+      evt.preventDefault();
+      const isValid = pristine.validate();
+      if (isValid) {
+        blockSubmitButton();
+        sendData(//функция отправки на сервер
+          () => {showAlertSuccess(ALERT_SHOW_TIME);
+            unblockSubmitButton();
+            onSuccess();
+          },
+          () => {
+            showAlertError();
+            unblockSubmitButton();//разблок кнопку после ошибки
+          },
+          new FormData(evt.target),
+        );
+      }
+    }
+  );
+};
+
+//(2)функции для валидации поля с ценой в зависимости от выбранного типа жилья и генерации сообщения об ошибке
+const validatePriceInput = () => priceInput.value >= MIN_PRICE_OF_HOUSING[housingTypeInput.value];//сравниваем => получаем тру или фолс
+const getPriceErrorMessage = () => {
+  if (priceInput.value <= MIN_PRICE_OF_HOUSING[housingTypeInput.value]) {
+    return `минимальная стоимость за ночь ${MIN_PRICE_OF_HOUSING[housingTypeInput.value]}`;
+    //если в верхней функции false то выдает как ощибку с описанием
+  }
+};
 
 //(3)функция  обработки изменения поля с выбором жилья и параметры  сладера в зависимости от вбора жилья
 const onHousingTypeInputChange = () => {
@@ -150,7 +165,6 @@ const getFormValidation = () => {
   resetAdForm();
   //(1)отправка формы и при успехе очистка полей
   setUserFormSubmit(resetAdForm);
-
   //(2)блок прайса и типа жилья
   pristine.addValidator(priceInput, validatePriceInput, getPriceErrorMessage);//1 елемент, 2 если тру 3 если false
   //(3)
@@ -166,6 +180,12 @@ const getFormValidation = () => {
   checkInInput.addEventListener('change', onCheckInOutInputChange);//использу одну функцию чтоб синхронизировать время
   checkOutInput.addEventListener('change', onCheckInOutInputChange);
   //6 важно незабыть сделать проверку на адрес отправки
+
+  //7сброс
+  resetSubmit.addEventListener('click', (evt)=>{
+    evt.preventDefault();
+    resetAdForm();
+  });
 };
 
 getFormValidation();
