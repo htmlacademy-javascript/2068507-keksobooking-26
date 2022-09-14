@@ -63,8 +63,6 @@ noUiSlider.create(sliderElement, {
     },
   },
 });
-// sliderElement.setAttribute('disabled', true);//заблокировать слайдер
-// sliderElement.removeAttribute('disabled');//разблокировать слайдер
 
 const resetAdForm = () => {
   adForm.reset();
@@ -92,7 +90,7 @@ const unblockSubmitButton = () => {
   submitButton.disabled = false;
   submitButton.textContent = 'Опубликовать';
   removeDisableForm(adForm);
-  sliderElement.removeAttribute('disabled')
+  sliderElement.removeAttribute('disabled');
 };
 
 const setUserFormSubmit = (onSuccess) =>{
