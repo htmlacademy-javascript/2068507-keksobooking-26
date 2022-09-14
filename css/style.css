@@ -407,6 +407,15 @@ fieldset {
   margin-right: 14px;
 }
 
+.ad-form__element .pristine-error {
+  color: red;
+}
+
+.ad-form__element--capacity .pristine-error,
+.ad-form__element--price .pristine-error {
+  margin-left: -100%;
+}
+
 .ad-form__slider.noUi-target:not(#fake-id) {
   width: calc(100% - 20px);
   height: 5px;
@@ -431,6 +440,7 @@ fieldset {
 .ad-form__slider:not(#fake-id) .noUi-handle::before {
   display: none;
 }
+
 
 .features legend {
   padding-bottom: 5px;

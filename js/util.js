@@ -1,20 +1,5 @@
 const TIMEOUT_DELAY = 500;
 
-// const getRandomPositiveNumber = (min, max, fraction) => { //рандомное число с количеством 0 после запятой
-//   const isRangeCorrect = min <= max && min >= 0;
-//   if(isRangeCorrect){
-//     const rand = Math.random() * (max - min) + min;
-//     return rand.toFixed(fraction);
-//   // } else {
-//   //   console.log('передан неверный диапазон');//доделать
-//   }
-// };
-
-// const getRandomValue = (value) => { //рандомный элемент из объекта
-//   const random = Math.floor(Math.random() * value.length);
-//   return value[random];
-// };
-
 //функция для деактивации форм
 const addDisableForm = (form) => {
   form.classList.add(`${form.classList[0]}--disabled`);
@@ -50,6 +35,7 @@ const showAlertError = () => {
   });
   document.body.append(errorClone);
 };
+
 //всплывающее окно на успешную отправку данных
 const showAlertSuccess = (time) => {
   const onSuccess = document.querySelector('#success').content.querySelector('.success');

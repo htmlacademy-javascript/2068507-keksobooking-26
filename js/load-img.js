@@ -5,18 +5,14 @@ const fileChooserAvatar = document.querySelector('.ad-form__field input[type=fil
 const previewAvatar = document.querySelector('.ad-form-header__preview img');
 const defaultAvatarPreview = previewAvatar.src;
 
-//обработчик на загрузку фото (в html выставлены ограничения на загрузку форматов)
 fileChooserAvatar.addEventListener('change', ()=>{
   const file = fileChooserAvatar.files[0];
-  //   preview.width = '65';
-  //   preview.height = '65';
-
-  const matches = FILE_TYPE.some((it) => {//проверка на подходящие форматы
-    const fileName = file.name.toLowerCase();//приводит к строчным буквам
-    return fileName.endsWith(it);//проверка окончаний
+  const matches = FILE_TYPE.some((it) => {
+    const fileName = file.name.toLowerCase();
+    return fileName.endsWith(it);
   });
-  if(matches){//если тру
-    previewAvatar.src = URL.createObjectURL(file);//вписывает фото
+  if(matches){
+    previewAvatar.src = URL.createObjectURL(file);
   }
 });
 
@@ -24,26 +20,23 @@ const photoChooser = document.querySelector('#images');
 const previewPhoto = document.querySelector('.ad-form__photo');
 
 photoChooser.addEventListener('change', () => {
-  // previewPhoto.innerHTML = '';
   const imgElement = document.createElement('img');
-
   imgElement.style.width = DEFAULT_SIZE;
   imgElement.style.height = DEFAULT_SIZE;
-
   const file = photoChooser.files[0];
-  const matches = FILE_TYPE.some((it) => {//проверка на подходящие форматы
-    const fileName = file.name.toLowerCase();//приводит к строчным буквам
+  const matches = FILE_TYPE.some((it) => {
+    const fileName = file.name.toLowerCase();
     return fileName.endsWith(it);
-  });//проверка окончаний
+  });
   if (matches) {
     imgElement.src = URL.createObjectURL(file);
   }
   previewPhoto.appendChild(imgElement);
 });
-const resetUploadImg = () => {
-  previewAvatar.src = defaultAvatarPreview;
+const resetLoadImg = () => {
   previewPhoto.innerHTML = '';
+  previewAvatar.src = defaultAvatarPreview;
 };
 
-export {resetUploadImg};
+export {resetLoadImg};
 
