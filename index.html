@@ -81,7 +81,7 @@
               <img src="img/muffin-grey.svg" alt="Аватар пользователя" width="40" height="44">
             </div>
             <div class="ad-form__field">
-              <input type="file" id="avatar" name="avatar" class="ad-form-header__input visually-hidden">
+              <input type="file" id="avatar" name="avatar" class="ad-form-header__input visually-hidden" accept="image/png, image/jpeg">
               <label class="ad-form-header__drop-zone" for="avatar">Загрузить<br>фото...</label>
             </div>
             <p class="ad-form-header__info">Заполните все обязательные поля, назначьте цену, загрузите аватар и фото жилья. Придумайте интересное описание. Оно сделает объявление более живым и привлекательным. Получившееся объявление должно давать гостям полное представление о вашем жилье.</p>
@@ -92,9 +92,10 @@
           <input id="title" name="title" type="text" placeholder="Милая, уютная квартирка в центре Токио" required minlength="30" maxlength="100"
           data-pristine-required-message="Обязательное поле" data-pristine-minlength-message="Минимальная длина заголовка 30 символов" data-pristine-maxlength-message="Максимальная длина заголовка 100 символов">
         </fieldset>
-        <fieldset class="ad-form__element ad-form__element--wide">
+        <fieldset class="ad-form__element ad-form__element--wide pristine-custom" >
           <label class="ad-form__label" for="address">Адрес (координаты)</label>
-          <input id="address" name="address" type="text">
+          <input id="address" name="address" type="text" readonly required
+          data-pristine-required-message="Обязательное поле">
         </fieldset>
         <fieldset class="ad-form__element">
           <label class="ad-form__label" for="type">Тип жилья</label required>
@@ -111,7 +112,7 @@
           <input id="price" name="price" type="number" placeholder="5000" required
           data-pristine-required-message="Обязательное поле"
           max="100000" 
-          data-pristine-max-message="100 000">
+          data-pristine-max-message="Максимальная цена 100 000">
 
           <div class="ad-form__slider"></div>
         </fieldset>
@@ -137,16 +138,16 @@
             <option value="100">100 комнат</option>
           </select>
         </fieldset>
-        <fieldset class="ad-form__element">
+        <fieldset class="ad-form__element pristine-custom">
           <label class="ad-form__label" for="capacity">Количество мест</label>
-          <select id="capacity" name="capacity">
+          <select id="capacity" name="capacity" >
             <option value="3" selected>для 3 гостей</option>
             <option value="2">для 2 гостей</option>
             <option value="1">для 1 гостя</option>
             <option value="0">не для гостей</option>
           </select>
         </fieldset>
-        <fieldset class="ad-form__element ad-form__element--wide features">
+        <fieldset class="ad-form__element pristine-custom ad-form__element--wide features">
           <legend>Удобства: Wi-Fi, кухня, парковка, стиралка, лифт, кондиционер</legend>
           <input class="features__checkbox visually-hidden" type="checkbox" name="feature" value="wifi" id="feature-wifi">
           <label class="features__label features__label--wifi" for="feature-wifi">Wi-Fi</label>

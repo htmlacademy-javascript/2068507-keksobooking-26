@@ -1,4 +1,10 @@
-import {addDisableForm} from './util.js';
+import {addDisableForm, removeDisableForm, showAlertError, showAlertSuccess} from './util.js';
+import {sendData} from './api.js';
+import {mapFilters, mainPinMarker, DEFAULT_LAT_LNG, ZOOM, map, renderMarkersWithDebounce} from './ads.js';
+import {state} from './data.js';
+import {resetLoadImg} from './load-img.js';
+
+const ALERT_SHOW_TIME = 5000;
 
 const adForm = document.querySelector('.ad-form');
 const housingTypeInput = adForm.querySelector('#type');
@@ -7,8 +13,8 @@ const checkInInput = adForm.querySelector('#timein');
 const checkOutInput = adForm.querySelector('#timeout');
 const roomNumberInput = adForm.querySelector('#room_number');
 const capacityInput = adForm.querySelector('#capacity');
-
-//слайдер на инпут прайса
+const submitButton = adForm.querySelector('.ad-form__submit');
+const resetSubmit = adForm.querySelector('.ad-form__reset');
 const sliderElement = document.querySelector('.ad-form__slider');
 
 const ROOM_CAPACITY = {
@@ -37,26 +43,6 @@ const pristine = new Pristine (adForm,
   }
 );
 
-//(1)функция обработки события отправки формы для передачи по ссылке
-const onAdFormSubmit = (evt) => {
-  const isValid = pristine.validate();
-  if (!isValid) {
-    evt.preventDefault();
-  } else {
-    addDisableForm(adForm);//блокируем форму после нажатия
-  }
-};
-
-//(2)функции для валидации поля с ценой в зависимости от выбранного типа жилья и генерации сообщения об ошибке
-const validatePriceInput = () => priceInput.value >= MIN_PRICE_OF_HOUSING[housingTypeInput.value];//сравниваем => получаем тру или фолс
-const getPriceErrorMessage = () => {
-  if (priceInput.value <= MIN_PRICE_OF_HOUSING[housingTypeInput.value]) {
-    return `минимальная стоимость за ночь ${MIN_PRICE_OF_HOUSING[housingTypeInput.value]}`;
-    //если в верхней функции false то выдает как ощибку с описанием
-  }
-};
-
-//создание слайдера
 noUiSlider.create(sliderElement, {
   range: {
     min: 0,
@@ -66,75 +52,117 @@ noUiSlider.create(sliderElement, {
   step: 1,
   connect: 'upper',
   format: {
-    to: function (value) {// to обращение к set
-      if (Number.isInteger(value)) {//isInteger проеряет целочисленное число
+    to: function (value) {
+      if (Number.isInteger(value)) {
         return value.toFixed(0);
       }
-      return value.toFixed(0);//знаков после запятой
+      return value.toFixed(0);
     },
-    from: function (value) {//from обращение  к get
+    from: function (value) {
       return parseFloat(value);
     },
   },
 });
-// способ блокировки слайдера
-sliderElement.setAttribute('disabled', true);//заблокировать слайдер
-sliderElement.removeAttribute('disabled');//разблокировать слайдер
-//способ удаления слайдера оставил ПРОЗАПАС
-// sliderElement.noUiSlider.destroy();
 
-//(3)функция  обработки изменения поля с выбором жилья и параметры  сладера в зависимости от вбора жилья
+const resetAdForm = () => {
+  adForm.reset();
+  priceInput.value = MIN_PRICE_OF_HOUSING[housingTypeInput.value];
+  sliderElement.noUiSlider.reset();
+  capacityInput.value = '1';
+  renderMarkersWithDebounce(state.adverts.slice(0, 10));
+  mapFilters.reset();
+  resetLoadImg();
+  mainPinMarker.setLatLng({
+    lat: DEFAULT_LAT_LNG.lat,
+    lng: DEFAULT_LAT_LNG.lng,
+  });
+  map.setView(DEFAULT_LAT_LNG, ZOOM);
+
+};
+
+const blockSubmitButton = () => {
+  submitButton.disable = true;
+  submitButton.textContent = 'Сохраняю...';
+  addDisableForm(adForm);
+  sliderElement.setAttribute('disabled', true);
+};
+const unblockSubmitButton = () => {
+  submitButton.disabled = false;
+  submitButton.textContent = 'Опубликовать';
+  removeDisableForm(adForm);
+  sliderElement.removeAttribute('disabled');
+};
+
+const setUserFormSubmit = (onSuccess) =>{
+  adForm.addEventListener('submit',
+    (evt) => {
+      evt.preventDefault();
+      const isValid = pristine.validate();
+      if (isValid) {
+        blockSubmitButton();
+        sendData(
+          () => {showAlertSuccess(ALERT_SHOW_TIME);
+            unblockSubmitButton();
+            onSuccess();
+          },
+          () => {
+            showAlertError();
+            unblockSubmitButton();
+          },
+          new FormData(evt.target),
+        );
+      }
+    }
+  );
+};
+
+const validatePriceInput = () => priceInput.value >= MIN_PRICE_OF_HOUSING[housingTypeInput.value];
+const getPriceErrorMessage = () => {
+  if (priceInput.value <= MIN_PRICE_OF_HOUSING[housingTypeInput.value]) {
+    return `минимальная стоимость за ночь ${MIN_PRICE_OF_HOUSING[housingTypeInput.value]}`;
+  }
+};
+
 const onHousingTypeInputChange = () => {
   const priseMinPlaceholder = MIN_PRICE_OF_HOUSING[housingTypeInput.value];
-  priceInput.min = priseMinPlaceholder;
   priceInput.value = priseMinPlaceholder ;
   sliderElement.noUiSlider.updateOptions({
     range: {
-      min: priseMinPlaceholder,
+      min: 0,
       max: 100000,
     },
     start: priseMinPlaceholder,
     step: 1,
   });
-  // sliderElement.noUiSlider.set(priseMinPlaceholder);// альтернатива старта
 };
 
-//(4)функции для валидации полей с количеством комнат и количеством гостей и генерация сообщения об ошибке
 const validateRoomNumberInput = () => ROOM_CAPACITY[roomNumberInput.value].includes(capacityInput.value);
 const getCapacityErrorMessage = () => `Размещение в ${roomNumberInput.value} ${roomNumberInput.value === '1' ? 'комнате' : 'комнатах'} для ${capacityInput.value} ${capacityInput.value === '1' ? 'гостя' : 'гостей'} невозможно`;
 
-//(5)функции синхронизации для чекина и чекаута при изменении значения одного из полей
-const onCheckInOutInputChange = () => {
+const onCheckInInputChange = () => {
   checkOutInput.value = checkInInput.value;
 };
-//функция для очистки формы и возвращения к первоначальным значениям
-const resetAdForm = () => {
-  priceInput.placeholder = MIN_PRICE_OF_HOUSING[housingTypeInput.value];
-  capacityInput.value = '2';
+const onCheckOutInputChange = () => {
+  checkInInput.value = checkOutInput.value ;
 };
 
-//функция из всех функций связянных с валидацией и отправкой формы
 const getFormValidation = () => {
-  //(1)
-  adForm.addEventListener('submit', onAdFormSubmit);
-
-  //(2)блок прайса и типа жилья
-  pristine.addValidator(priceInput, validatePriceInput, getPriceErrorMessage);//1 елемент, 2 если тру 3 если false
-  //(3)
+  resetAdForm();
+  setUserFormSubmit(resetAdForm);
+  pristine.addValidator(priceInput, validatePriceInput, getPriceErrorMessage);
   housingTypeInput.addEventListener('change', onHousingTypeInputChange);
-  sliderElement.noUiSlider.on('update', (/*...rest*/) => {
-    // console.log(rest);
-    priceInput.value = sliderElement.noUiSlider.get();//слайдер переносит в поле цену
+  sliderElement.noUiSlider.on('update', () => {
+    priceInput.value = sliderElement.noUiSlider.get();
   });
-
-  //(4)валидация комнат и кол-ва человек
   pristine.addValidator(capacityInput, validateRoomNumberInput, getCapacityErrorMessage);
   pristine.addValidator(roomNumberInput, validateRoomNumberInput, getCapacityErrorMessage);
-  //(5)
-  checkInInput.addEventListener('change', onCheckInOutInputChange);//использу одну функцию чтоб синхронизировать время
-  checkOutInput.addEventListener('change', onCheckInOutInputChange);
+  checkInInput.addEventListener('change', onCheckInInputChange);
+  checkOutInput.addEventListener('change', onCheckOutInputChange);
+
+  resetSubmit.addEventListener('click', (evt)=>{
+    evt.preventDefault();
+    resetAdForm();
+  });
 };
 
-resetAdForm();
 getFormValidation();
-
